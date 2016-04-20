@@ -57,6 +57,7 @@ static PyObject* p_setnonblock(register pcapobject* pp, PyObject* args);
 static PyObject* p_getnonblock(register pcapobject* pp, PyObject* args);
 static PyObject* p_dump_open(register pcapobject* pp, PyObject* args);
 static PyObject* p_sendpacket(register pcapobject* pp, PyObject* args);
+static PyObject* p_getselectablefd(register pcapobject* pp, PyObject*);
 
 static PyMethodDef p_methods[] = {
   {"loop", (PyCFunction) p_loop, METH_VARARGS, "loops packet dispatching"},
@@ -70,6 +71,7 @@ static PyMethodDef p_methods[] = {
   {"setnonblock", (PyCFunction) p_setnonblock, METH_VARARGS, "puts into `non-blocking' mode, or take it out, depending on the argument"},
   {"dump_open", (PyCFunction) p_dump_open, METH_VARARGS, "creates a dumper object"},
   {"sendpacket", (PyCFunction) p_sendpacket, METH_VARARGS, "sends a packet through the interface"},
+  {"getselectablefd", (PyCFunction) p_getselectablefd, METH_NOARGS, "returns a file descriptor on which a select() can be done for a live capture"},
   {NULL, NULL}	/* sentinel */
 };
 
@@ -523,4 +525,26 @@ p_sendpacket(register pcapobject* pp, PyObject* args)
 
   Py_INCREF(Py_None);
   return Py_None;
+}
+
+static PyObject*
+p_getselectablefd(register pcapobject* pp, PyObject*)
+{
+  int fd = -1;
+
+  if (Py_TYPE(pp) != &Pcaptype)
+  {
+    PyErr_SetString(PcapError, "Not a pcap object");
+    return NULL;
+  }
+
+  fd = pcap_get_selectable_fd(pp->pcap);
+
+  if(fd == -1)
+  {
+    PyErr_SetString(PcapError, pcap_geterr(pp->pcap));
+    return NULL;
+  }
+  
+  return Py_BuildValue("i", fd);
 }

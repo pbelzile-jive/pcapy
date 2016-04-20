@@ -941,6 +941,32 @@
         </para>
       </refsect1>
     </refentry>
+
+    <refentry>
+      <refnamediv>
+        <refname>getselectablefd</refname>
+        <refpurpose>Get a selectable file descriptor</refpurpose>
+      </refnamediv>
+
+      <refsynopsisdiv>
+        <funcsynopsis>
+          <funcprototype>
+            <funcdef>
+              int <function>getselectablefd</function>
+            </funcdef>
+            <void/>
+          </funcprototype>
+        </funcsynopsis>
+      </refsynopsisdiv>
+
+      <refsect1>
+        <title>DESCRIPTION</title>
+        <para>
+          <function>getselectablefd</function> get a file descriptor on which a select() 
+          can be done for a live capture.
+        </para>
+      </refsect1>
+    </refentry>
   </reference>
 
   <reference>
